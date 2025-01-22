@@ -1,23 +1,18 @@
-# sensor-insole-prototyping
-##Using off-the-shelf sensors for flexible shoe sensing
+# Using off-the-shelf sensors for flexible shoe sensing
+
+![image](./images/insole.png)
+
+This repository holds two applications of cheap FSR sensors for rapid prototyping of smart insoles for various feedback systems.
+
+## RFDuino
+This is the first iteration of the platform which supports the (now discontinued) RFDuino. 
+[Read more](./RFDuino/)
+
+## ESP8266
+This implementation supports the ESP8266, works over WiFi and also includes one output channel for a vibration motor.
+[Read more](./ESP8266//)
 
 
 
-This project features a wireless logging of force senstive sensors which could be placed on a shoe's insole.
-
-## Installation 
-    
-    cd Adafruit_Python_BluefruitLE
-    sudo python setup.py install
-
-## Requirements
-
-- Ardafruit Bluetooth LE Library (get it from https://github.com/adafruit/Adafruit_Python_BluefruitLE) but there is also a copy in the repository
-- RFDuino 
-- up to 6 force sensitive resistors (https://www.adafruit.com/products/166)
-- 3V battery
-
-## Usage
-
-- start the arduino by inserting a 3V battery
-- start the server with `python python-client.py` in the terminal
+## Cardboard Insoles
+In `./scaled_insole_pdf` you can find a set of scaled (in mm) A4 PDFs of printable insoles which can serve as medium to apply the pressure sensors and stick them into the shoes of your choosing. 
