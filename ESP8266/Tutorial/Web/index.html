@@ -1,0 +1,160 @@
+<html>
+    <head>
+        <title>WebSocket client example</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="http://fargo.io/code/jquery-1.9.1.min.js"></script>
+        <link href="http://fargo.io/code/ubuntuFont.css" rel="stylesheet" type="text/css">
+
+        <script type="text/javascript" src="js/smoothie.js"></script>
+
+        
+        <style>
+            body {
+                font-family: Ubuntu;
+                font-size: 18px;
+                background-color: whitesmoke;
+                }
+            .divPageBody {
+                width: 60%;
+                margin-top: 90px;
+                margin-left: auto;
+                margin-right: auto;
+                }
+            </style>
+        </head>
+    <body>
+        <div class="divPageBody">
+            <h1>WebSocket client</h1>
+            <p id="idWebSocketResult">
+                </p>
+            <p id="idWebSocketTime"></p>
+
+            <canvas id="mycanvas" width="800" height="400"></canvas>
+
+            </div>
+
+            <h3>Last seen: <span id="last_seen">xx</span></h3>
+            <h2>Settings</h2>
+
+            Current max_value <input id="current_max"/> <button id="save_current_max">Save</button>
+
+
+
+<script>
+
+
+
+            var urlMySocket = "ws://192.168.4.1:81/";
+
+            var base_url  = "http://192.168.4.1/";
+
+
+            /// CHART STUFF
+            var smoothie = new SmoothieChart();
+            smoothie.streamTo(document.getElementById("mycanvas"));
+
+            // Data
+            var line1 = new TimeSeries({'resetBoundsInterval':100000});
+            var line2 = new TimeSeries({'resetBoundsInterval':100000});
+            var line3 = new TimeSeries({'resetBoundsInterval':100000});
+            
+            
+            
+            
+            // Add to SmoothieChart
+            smoothie.addTimeSeries(line1, {strokeStyle:'#F5000E'});
+            smoothie.addTimeSeries(line2, {strokeStyle:'#27FF0C'});
+            smoothie.addTimeSeries(line3, {strokeStyle:'#F8FC10'});
+            
+            
+
+            
+            var ctSeconds = 0;
+
+            var mySocket = null;
+
+            var last_rec = new  Date();
+
+                        function secondsSince (when) { 
+                var now = new Date ();
+                when = new Date (when);
+                return ((now - when) );
+                }
+
+            function setupSocket(){
+
+                mySocket = new WebSocket (urlMySocket); 
+
+                mySocket.onopen = function (evt) {
+                    console.log("socket open");
+                    mySocket.send ("hello!!");
+                    };
+                mySocket.onmessage = function (evt) {
+                    
+
+                    var d = new Date().getTime();
+                    var data = evt.data.split(',');
+                    
+                    
+
+
+
+                    line1.append(d, parseInt(data[0]));
+                    line2.append(d, parseInt(data[1]));
+                    line3.append(d, parseInt(data[2]));
+                    
+
+
+
+                    last_rec = new Date();
+
+                    };
+                
+
+
+            }
+
+            function startup () {
+                console.log ("startup");
+                    setupSocket();
+
+
+                    $('#save_current_max').click(function(){
+                        $.get(base_url + "set_current_max?max="+current_max, function(res){
+                            alert(res);
+                        });
+                    });
+
+
+                }
+
+
+
+
+            </script>
+
+
+        <script>
+            $(document).ready (function () {
+                startup ();
+
+                var values = [];
+                var current_index = 0;
+                var max_length = 50;
+
+                setInterval(function(){ 
+                    var diff = new Date() - last_rec;
+
+                    current_index++;
+                    values[current_index % max_length] = diff;
+
+                    var avg = values.reduce((sum, value) => sum+value, 1) / max_length;
+
+                    $('#last_seen').html(avg + " - " + diff);
+                 },9);
+
+                });
+            </script>
+        </body>
+    </html>
